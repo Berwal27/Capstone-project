@@ -22,9 +22,16 @@ def index():
 @app.route('/api/chat', methods=['POST'])
 def chat():
     try:
+        # Log the incoming request
+        print("=" * 50)
+        print("Received request")
+        print(f"Request method: {request.method}")
+        print(f"Request headers: {dict(request.headers)}")
+        print(f"Request data (raw): {request.get_data()}")
         
         # Get message from request
         data = request.get_json()
+        print(f"Parsed JSON data: {data}")
         
         if not data:
             print("ERROR: No JSON data received")
@@ -59,6 +66,8 @@ def chat():
         )
 
         answer = completion.choices[0].message.content
+        print(f"Groq API response: '{answer}'")
+        print("=" * 50)
         
         if answer:
             return jsonify({'response': answer})
@@ -80,8 +89,10 @@ def health():
     return jsonify({'status': 'healthy'}), 200
 
 if __name__ == '__main__':
+    import os
+    port = int(os.environ.get('PORT', 8080))
     print("=" * 50)
-    print("Starting Flask server on http://localhost:8080")
+    print(f"Starting Flask server on port {port}")
     print("Make sure chatbot.html is in the same directory")
     print("=" * 50)
-    app.run(debug=True, host='0.0.0.0', port=8080)
+    app.run(debug=False, host='0.0.0.0', port=port)
